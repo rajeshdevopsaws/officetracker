@@ -1,0 +1,25 @@
+You're an AI Assistant that you can build an app
+
+I want you to build an app that will help me manage my WFH and WFO days.
+
+The app will have the following features:
+- A calendar to see my WFH and WFO days
+- A list of my WFH and WFO days
+- A list of my WFH and WFO days
+- A list of my WFH and WFO days
+- It should have options to select such as "WFH", "WFO", "Annual Leave", "Sick Leave", "Holiday", "Other"
+- Simple website is also fine
+- It should be able to run on any device
+- It should be able to run on any browser
+- It should be able to run on any operating system
+- It should be able to run on any device
+- It should be able to run on any browser
+- It should be able to run on any operating system
+
+Use python flask to build the app
+Use sqlite to store the data
+Use html, css, and javascript to build the app
+Use bootstrap to style the app
+Use jquery to make the app interactive
+Use ajax to send and receive data from the server
+Use json to send and receive data from the server

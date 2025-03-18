@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Office Tracker</h1>
+    
+    <div class="row">
+        <div class="col-md-9">
+            <div id="calendar"></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    Add New Entry
+                </div>
+                <div class="card-body">
+                    <form id="eventForm">
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Type</label>
+                            <select class="form-control" id="type" required>
+                                <option value="WFH">Work From Home</option>
+                                <option value="WFO">Work From Office</option>
+                                <option value="AL">Annual Leave</option>
+                                <option value="SL">Sick Leave</option>
+                                <option value="HOL">Holiday</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add Entry</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this modal at the end of the content block -->
+<div class="modal fade" id="eventModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateEventForm">
+                    <input type="hidden" id="eventId">
+                    <div class="mb-3">
+                        <label for="editDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="editDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editType" class="form-label">Type</label>
+                        <select class="form-control" id="editType" required>
+                            <option value="WFH">Work From Home</option>
+                            <option value="WFO">Work From Office</option>
+                            <option value="AL">Annual Leave</option>
+                            <option value="SL">Sick Leave</option>
+                            <option value="HOL">Holiday</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="button" class="btn btn-danger" id="deleteEvent">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
