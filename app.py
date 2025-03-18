@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 import os
 import shutil
+import argparse
 
 app = Flask(__name__)
 
@@ -155,5 +156,14 @@ def list_backups():
     return jsonify(sorted(backups, key=lambda x: x['timestamp'], reverse=True))
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Office Tracker Application')
+    parser.add_argument('--host', default='0.0.0.0', help='Host to bind to')
+    parser.add_argument('--port', type=int, default=5000, help='Port to bind to')
+    args = parser.parse_args()
+
     init_db()
-    app.run(debug=True) 
+    app.run(
+        host=args.host,
+        port=args.port,
+        debug=False  # Set to False in production
+    ) 
