@@ -9,6 +9,21 @@
             <div id="calendar"></div>
         </div>
         <div class="col-md-3">
+            <div class="card mb-3">
+                <div class="card-header">
+                    Export Monthly Report
+                </div>
+                <div class="card-body">
+                    <form id="exportForm">
+                        <div class="mb-3">
+                            <label for="exportMonth" class="form-label">Select Month</label>
+                            <input type="month" class="form-control" id="exportMonth" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Export to Excel</button>
+                    </form>
+                </div>
+            </div>
+            
             <div class="card">
                 <div class="card-header">
                     Add New Entry
@@ -22,8 +37,8 @@
                         <div class="mb-3">
                             <label for="type" class="form-label">Type</label>
                             <select class="form-control" id="type" required>
+                                <option value="WFO" selected>Work From Office</option>
                                 <option value="WFH">Work From Home</option>
-                                <option value="WFO">Work From Office</option>
                                 <option value="AL">Annual Leave</option>
                                 <option value="SL">Sick Leave</option>
                                 <option value="HOL">Holiday</option>

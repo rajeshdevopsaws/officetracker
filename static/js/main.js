@@ -94,4 +94,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Export form handler
+    $('#exportForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const monthInput = $('#exportMonth').val(); // Format: "YYYY-MM"
+        const [year, month] = monthInput.split('-');
+        
+        // Create the download URL
+        const downloadUrl = `/api/export/${year}/${month}`;
+        
+        // Trigger the download
+        window.location.href = downloadUrl;
+    });
 }); 

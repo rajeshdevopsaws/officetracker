@@ -1,9 +1,12 @@
-from flask import Flask, render_template, request, jsonify, g
+from flask import Flask, render_template, request, jsonify, g, send_file
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import shutil
 import argparse
+import pandas as pd
+import calendar
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -154,6 +157,85 @@ def list_backups():
                 'size': os.path.getsize(backup_path)
             })
     return jsonify(sorted(backups, key=lambda x: x['timestamp'], reverse=True))
+
+@app.route('/api/export/<int:year>/<int:month>', methods=['GET'])
+def export_month(year, month):
+    try:
+        # Get the first and last day of the month
+        first_day = f"{year}-{month:02d}-01"
+        _, last_day_of_month = calendar.monthrange(year, month)
+        last_day = f"{year}-{month:02d}-{last_day_of_month}"
+        
+        # Get events for the specified month
+        db = get_db()
+        cursor = db.execute(
+            'SELECT date, type FROM events WHERE date BETWEEN ? AND ? ORDER BY date',
+            [first_day, last_day]
+        )
+        events = cursor.fetchall()
+        
+        # Create a DataFrame
+        df = pd.DataFrame(events, columns=['Date', 'Type'])
+        
+        # Create a mapping for event types
+        type_mapping = {
+            'WFH': 'Work From Home',
+            'WFO': 'Work From Office',
+            'AL': 'Annual Leave',
+            'SL': 'Sick Leave',
+            'HOL': 'Holiday',
+            'OTHER': 'Other'
+        }
+        
+        # Replace type codes with full names
+        df['Type'] = df['Type'].map(type_mapping)
+        
+        # Add summary statistics
+        summary = df['Type'].value_counts()
+        
+        # Create Excel writer object
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            # Write main data
+            df.to_excel(writer, sheet_name='Daily Records', index=False)
+            
+            # Write summary
+            summary.to_frame('Count').to_excel(writer, sheet_name='Summary')
+            
+            # Get the workbook and the worksheets
+            workbook = writer.book
+            daily_sheet = workbook['Daily Records']
+            summary_sheet = workbook['Summary']
+            
+            # Format the Daily Records sheet
+            for column in daily_sheet.columns:
+                max_length = 0
+                column = [cell for cell in column]
+                for cell in column:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2)
+                daily_sheet.column_dimensions[column[0].column_letter].width = adjusted_width
+            
+            # Format the Summary sheet
+            for column in summary_sheet.columns:
+                summary_sheet.column_dimensions[column[0].column_letter].width = 15
+
+        # Prepare the response
+        output.seek(0)
+        month_name = calendar.month_name[month]
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=f'office_tracker_{month_name}_{year}.xlsx'
+        )
+        
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Office Tracker Application')
