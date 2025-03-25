@@ -177,6 +177,15 @@ def export_month(year, month):
         # Create a DataFrame
         df = pd.DataFrame(events, columns=['Date', 'Type'])
         
+        # Convert Date string to datetime
+        df['Date'] = pd.to_datetime(df['Date'])
+        
+        # Add Day of Week column
+        df['Day'] = df['Date'].dt.strftime('%A')  # %A gives full day name (Monday, Tuesday, etc.)
+        
+        # Reorder columns to show Day after Date
+        df = df[['Date', 'Day', 'Type']]
+        
         # Create a mapping for event types
         type_mapping = {
             'WFH': 'Work From Home',
@@ -189,6 +198,9 @@ def export_month(year, month):
         
         # Replace type codes with full names
         df['Type'] = df['Type'].map(type_mapping)
+        
+        # Format the date to be more readable
+        df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
         
         # Add summary statistics
         summary = df['Type'].value_counts()
@@ -227,11 +239,12 @@ def export_month(year, month):
         # Prepare the response
         output.seek(0)
         month_name = calendar.month_name[month]
+        today_date = datetime.now().strftime('%Y%m%d')  # Get current date
         return send_file(
             output,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             as_attachment=True,
-            download_name=f'office_tracker_{month_name}_{year}.xlsx'
+            download_name=f'office_tracker_{month_name}_{year}_exported_{today_date}.xlsx'
         )
         
     except Exception as e:
@@ -240,7 +253,7 @@ def export_month(year, month):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Office Tracker Application')
     parser.add_argument('--host', default='0.0.0.0', help='Host to bind to')
-    parser.add_argument('--port', type=int, default=5000, help='Port to bind to')
+    parser.add_argument('--port', type=int, default=5001, help='Port to bind to')
     args = parser.parse_args()
 
     init_db()
